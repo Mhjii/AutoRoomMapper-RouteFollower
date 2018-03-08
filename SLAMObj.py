@@ -1,4 +1,6 @@
+import numpy as np
 from numpy import hypot
+
 
 def lidar2cords(pos,ang,dist):
     point=[0,0]
@@ -24,3 +26,8 @@ class LIDARPoint(Point)
         self.x,self.y = self.pos
         super(LIDARPoint,self).__init__(self.x,self.y)
 
+
+class  LineFeature:
+    """line object for slam and plotly"""
+    def __init__(self,w,maxconn,minconn):
+        self.w = w
