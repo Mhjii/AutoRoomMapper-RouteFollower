@@ -1,5 +1,5 @@
 import  numpy as np
-from numpy import array, transpose,dot
+from numpy import array, transpose,dot,min,max
 from numpy.linalg import inv
 import random
 import math
@@ -46,10 +46,32 @@ def linreg(data):
     for i in data:
         x_temp.append(i[0])
         y_temp.append(i[1])
-    X = array(x_temp)
-    T = array(y_temp)
-    X = np.column_stack((ones,X))
-    Xt = transpose(X)
-    product = dot(Xt,X)
+    x = array(x_temp)
+    t = array(y_temp)
+    x = np.column_stack((ones,x))
+    xt = transpose(x)
+    product = dot(xt,x)
     inverse = inv(product)
+    w = dot(dot(inverse,xt),t)
+
+    return w
+
+def consensus(test,w,play,c=200):
+
+    test = array(test)
+    min_x = min(test[:,0])
+    max_x = max(test[:,0])
+    p1 = [w[0]+min_x*w[1],min_x]
+    p2 = [w[0]+max_x*w[1],max_x]
+    p2_p1 = np.subtract(p2,p1)
+    test_p1 = np.subtract(test,p1)
+    dists = np.cross(p2_p1,test_p1)
+    consentors = 0
+    for i in dists:
+        if i >play:
+            consentors += 1
+    if consentors>c:
+        return True
+    else:
+        return False
 
