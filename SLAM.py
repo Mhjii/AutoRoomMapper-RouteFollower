@@ -75,3 +75,24 @@ def consensus(test,w,play,c=200):
     else:
         return False
 
+def spike(data,spikes,maxdelta):
+    n = data.__len__()
+    spikepos = []
+    for i in range(1,n-1):
+        delta1 = np.subtract(data[i],data[i-1])
+        delta2 = np.subtract(data[i],data[i+1])
+        hypot1 = np.hypot(delta1[0],delta1[1])
+        hypot2 = np.hypot(delta2[0],delta2[1])
+        diffTot = hypot1 + hypot2
+        if diffTot > maxdelta:
+            #spike detected
+            spikepos.append(i)
+    k=0
+    for j in spikepos
+        for i in spikes:
+            blob = i.inblob(j)
+            if not blob
+                spikes.append(SLAMObj.SpikeFeature(data[j-k]))
+            del data[j-k]
+            k+=1
+    return spikes,data
