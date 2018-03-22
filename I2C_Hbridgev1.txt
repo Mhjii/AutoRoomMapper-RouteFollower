@@ -1,0 +1,209 @@
+#include <stdint.h>
+#include <msp430.h>
+#include "i2c.h"
+#include "tsl2561.h"
+#include "msp430g2553.h"
+#include "boolean.h"
+#include "delay.h"
+#include "timeCounting.h"
+#include "bitio.h"
+
+
+// **********FOR DEBUGGING THIS PROJECT, OPTIMIZATION SETTING MUST BE SET TO 0*******************************************
+
+//interrupts
+//setup functions
+void setupClock(void);
+//void setupTimer_A0(void);
+void setupLum(void);
+static volatile uint32_t ticks;
+static volatile uint32_t start;
+static uint8_t LUM_ADDR; //0x29 , luminosity address /* look for TSL2561 sensor on I2C bus
+
+#define LED   BIT0
+#define DHT22 BIT0
+#define DHT22 BIT0
+
+char Steer=0;// 1=Forward , 2=Backward , 3=Right , 4=Left , 0=Stop
+char Prev_Steer=0;// contains previous steer value
+uint32_t lux = 0;
+char prev_Lux=1;
+char new_Lux=0;
+
+int main() ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ {
+      WDTCTL = WDTPW + WDTHOLD;   //Disable the Watchdog timer
+     _BIS_SR(GIE);                // Enable all Interrupts
+        P1OUT &= 0x00;               // Clear Pin 1
+        P1DIR &= 0x00;
+        P2OUT &= 0x00;               // Clear Pin 2
+        P2DIR &= 0x00;
+
+        //______________(Steering Check)_________________________________
+       // TA0CCR0 = 1000;               //Controls how fast system checks for steering update
+       // TA0CTL = TASSEL_2 + MC_1;     // SMCLK, timer in up mode
+        //TA0CCTL0 = CCIE;              // CCR0 interrupt enabled
+
+        //_________________(PWM ENA P2.1)______________________________
+        P2DIR    |=  BIT1;            // Set P2.1 to output-direction
+        P2SEL    |=  BIT1;            // Set P2.1 as TA1 output.
+        TA1CCTL1  = OUTMOD_7;         // Reset/set Mode
+        TA1CCR1 = 0;                  // Percent Duty Cycle
+        //_________________(PWM ENB P2.4)______________________________
+        P2DIR |= BIT4;                //Set P2.4 to output-direction.
+        P2SEL |= BIT4;                //Set P2.4 as TA1 output.
+        TA1CCTL2  = OUTMOD_7;         // Reset/set Mode
+        TA1CCR2 = 0;                  // Percent Duty Cycle
+
+        //_________________(PWM SETUP)______________________________
+        TA1CCR0   = 10000;                                   // Period
+        TA1CTL    = (TASSEL_2 | MC_1);                       // SMCLK, timer in up-mode
+
+
+
+        //_______________________________________________
+        P1DIR |= BIT1; //IN1 Side B P1.1
+        P1DIR |= BIT2; //IN2 Side B P1.2
+        P1DIR |= BIT3; //IN3 Side A P1.3
+        P1DIR |= BIT4; //IN4 Side A P1.4
+
+  setupClock(); //also initializes timeCounting
+
+    LUM_ADDR = TSL2561_ADDR_GND;//0x29 , luminosity address /* look for TSL2561 sensor on I2C bus
+   // uint32_t lux = 0;
+
+   // P1DIR |= BIT0;              //Set LED as output
+
+    //setupTimer_A0();
+    __bis_SR_register(GIE);     // enable interrupts
+   init_i2c();                  // I2C master mode, 100 kHz, 7 bit slave addresses
+
+
+    setupLum();                 //Initialize sensor for I2C communication
+
+    P1DIR |= BIT0;              //Set LED as output
+    TA1CCR1 = 10000;// 100% Duty Cycle
+    TA1CCR2 = 10000;// 100% Duty Cycle
+
+    ////Continually recieve new data from sensor
+    while(1){
+
+        lux = tsl2561_get_lux(LUM_ADDR); //gets lux value
+
+
+        if (lux > 500){
+            P1OUT ^=BIT0; //If lux is greater than 500, turn on LED
+            if(Steer ==4){
+                Steer &=0x00;
+            }
+            else {
+                Steer++;
+            }
+
+            switch(Steer){
+            case 0:{ //Stop
+                P1OUT &= 0x00+BIT0;
+                Prev_Steer = Steer;
+                __delay_cycles(2000000);
+                break;
+            }
+            case 1:{ //Forward
+                if(Prev_Steer != Steer){
+                    P1OUT &= BIT1+BIT4 +BIT0;
+                    Prev_Steer = Steer;
+                }
+                P1OUT |= BIT1 + BIT4+BIT0;
+                __delay_cycles(2000000);
+                break;
+            }
+            case 2:{ //Backward
+                if(Prev_Steer != Steer){
+                    P1OUT &= BIT2+BIT3+BIT0;
+                    Prev_Steer = Steer;
+                }
+                P1OUT |= BIT2 +BIT3+BIT0;
+                __delay_cycles(2000000);
+                break;
+            }
+            case 3:{ //Right
+                if(Prev_Steer != Steer){
+                    P1OUT &= BIT2+BIT4+BIT0;
+                    Prev_Steer = Steer;
+                }
+                P1OUT |= BIT2 +BIT4+BIT0;
+                __delay_cycles(2000000);
+                break;
+            }
+            case 4:{ //Left
+                if(Prev_Steer != Steer){
+                    P1OUT &= BIT1+BIT3+BIT0;
+                    Prev_Steer = Steer;
+                }
+                P1OUT |= BIT1 +BIT3+BIT0;
+                __delay_cycles(2000000);
+                break;
+            }
+            }
+                  }
+        else {
+                      P1OUT &= ~BIT0;
+                  }
+
+
+
+         //  start = ticks;
+
+    }
+} //END of main() ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*
+ *
+ * Interrupt Service Routines <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ *
+*/
+
+
+void setupClock(void){
+
+    /* disable watchdog */
+    //WDTCTL = WDTPW | WDTHOLD;
+    DCOCTL = 0;
+    P1OUT = 0;    // make sure all outputs are LOW
+    P2OUT = 0;    // make sure all outputs are LOW
+    /* hang if calibration constants have been erased */
+    if (CALBC1_1MHZ == 0xff || CALDCO_1MHZ == 0xff) {
+        for (;;)
+            ;
+    }
+    /* load calibrated settings for 1 MHz DCO clock */
+   BCSCTL1 = CALBC1_1MHZ;
+   DCOCTL = CALDCO_1MHZ;
+    /* load calibrated settings for 16 MHz DCO clock */
+   //BCSCTL1 = CALBC1_16MHZ;
+   //DCOCTL = CALDCO_16MHZ;
+  initTimeCounting();
+}
+
+void setupLum(void){
+
+
+    //sensor: TSL2561_ADDR_GND
+    if (tsl2561_power_up(LUM_ADDR) == 0) {
+        if (LUM_ADDR = TSL2561_ADDR_VDD, tsl2561_power_up(LUM_ADDR) == 0) {
+            if (LUM_ADDR = TSL2561_ADDR_FLOAT,
+                tsl2561_power_up(LUM_ADDR) == 0) {
+
+                for (;;)
+                    ;
+            }
+        }
+    }
+
+
+    tsl2561_set_gain_int_time(LUM_ADDR, TSL2561_GAIN_1X, TSL2561_INT_101_MS);
+}
+
+/*
+ *
+ * UTILITY functions <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ *
+*/

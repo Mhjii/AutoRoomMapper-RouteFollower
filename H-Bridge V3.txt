@@ -1,0 +1,127 @@
+#include <msp430.h>
+#include <msp430g2553.h>
+
+
+char Steer=0;// 1=Forward , 2=Backward , 3=Right , 4=Left , 0=Stop
+char Prev_Steer=0;// contains previous steer value
+int main(void) {
+
+
+    WDTCTL = WDTPW + WDTHOLD;   //Disable the Watchdog timer
+    _BIS_SR(GIE);                // Enable all Interrupts
+    P1OUT &= 0x00;               // Clear Pin 1
+    P1DIR &= 0x00;
+    P2OUT &= 0x00;               // Clear Pin 2
+    P2DIR &= 0x00;
+
+    //______________(Steering Check)_________________________________
+    TA0CCR0 = 1000;               //Controls how fast system checks for steering update
+    TA0CTL = TASSEL_2 + MC_1;     // SMCLK, timer in up mode
+    TA0CCTL0 = CCIE;              // CCR0 interrupt enabled
+
+    //_________________(PWM ENA P2.1)______________________________
+    P2DIR    |=  BIT1;            // Set P2.1 to output-direction
+    P2SEL    |=  BIT1;            // Set P2.1 as TA1 output.
+    TA1CCTL1  = OUTMOD_7;         // Reset/set Mode
+    TA1CCR1 = 0;                  // Percent Duty Cycle
+    //_________________(PWM ENB P2.4)______________________________
+    P2DIR |= BIT4;                //Set P2.4 to output-direction.
+    P2SEL |= BIT4;                //Set P2.4 as TA1 output.
+    TA1CCTL2  = OUTMOD_7;         // Reset/set Mode
+    TA1CCR2 = 0;                  // Percent Duty Cycle
+
+    //_________________(PWM SETUP)______________________________
+    TA1CCR0   = 10000;                                   // Period
+    TA1CTL    = (TASSEL_2 | MC_1);                       // SMCLK, timer in up-mode
+
+
+
+    //_______________________________________________
+    P1DIR |= BIT1; //IN1 Side B P1.1
+    P1DIR |= BIT2; //IN2 Side B P1.2
+    P1DIR |= BIT3; //IN3 Side A P1.3
+    P1DIR |= BIT4; //IN4 Side A P1.4
+
+
+while(1){
+    Steer=0;    // Stop
+    TA1CCR1 = 0;// 0% Duty Cycle
+    TA1CCR2 = 0;// 0% Duty Cycle
+    __delay_cycles(5000000);
+    Steer=1;       //Forward
+    TA1CCR1 = 2000;// 20% Duty Cycle
+    TA1CCR2 = 2000;// 20% Duty Cycle
+    __delay_cycles(5000000);
+    Steer=2;       //Backward
+    TA1CCR1 = 2000;// 50% Duty Cycle
+    TA1CCR2 = 2000;// 50% Duty Cycle
+    __delay_cycles(5000000);
+    Steer=3;       //Right
+    TA1CCR1 = 2000;// 70% Duty Cycle
+    TA1CCR2 = 2000;// 70% Duty Cycle
+    __delay_cycles(5000000);
+    Steer=4;        //Left
+    TA1CCR1 = 2000;// 100% Duty Cycle
+    TA1CCR2 = 2000;// 100% Duty Cycle
+    __delay_cycles(5000000);
+    Steer=1;       //Forward
+    TA1CCR1 = 2000;// 20% Duty Cycle
+    TA1CCR2 = 5000;// 50% Duty Cycle
+    __delay_cycles(5000000);
+    Steer=1;       //Forward
+    TA1CCR1 = 3000;// 30% Duty Cycle
+    TA1CCR2 = 9000;// 90% Duty Cycle
+    __delay_cycles(5000000);
+    Steer=1;       //Forward
+    TA1CCR1 = 10000;// 100% Duty Cycle
+    TA1CCR2 = 10000;// 100% Duty Cycle
+    __delay_cycles(5000000);
+}
+
+}
+
+#pragma vector = TIMER0_A0_VECTOR
+__interrupt void Timer0_A0_ISR( void )
+{
+    switch(Steer){
+        case 0:{ //Stop
+            P1OUT &= 0x00;
+            Prev_Steer = Steer;
+            break;
+        }
+        case 1:{ //Forward
+            if(Prev_Steer != Steer){
+               P1OUT &= BIT1+BIT4;
+               Prev_Steer = Steer;
+            }
+            P1OUT |= BIT1 +BIT4;
+                    break;
+                }
+        case 2:{ //Backward
+            if(Prev_Steer != Steer){
+                P1OUT &= BIT2+BIT3;
+                Prev_Steer = Steer;
+            }
+            P1OUT |= BIT2 +BIT3;
+                    break;
+                }
+        case 3:{ //Right
+            if(Prev_Steer != Steer){
+                P1OUT &= BIT2+BIT4;
+                Prev_Steer = Steer;
+            }
+            P1OUT |= BIT2 +BIT4;
+                    break;
+                }
+        case 4:{ //Left
+            if(Prev_Steer != Steer){
+                P1OUT &= BIT1+BIT3;
+                Prev_Steer = Steer;
+            }
+            P1OUT |= BIT1 +BIT3;
+                    break;
+                }
+    }
+}
+
+

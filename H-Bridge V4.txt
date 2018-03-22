@@ -1,0 +1,207 @@
+#include <msp430.h>
+#include <msp430g2553.h>
+
+#define STOP     0
+#define FORWARD  1
+#define BACKWARD 2
+#define RIGHT    3
+#define LEFT     4
+
+void Initialize(void);
+void Steering(char Steer, char Speed_A, char Speed_B);
+
+
+int main(void) {
+
+    Initialize();
+
+    unsigned volatile char Steer=0;//  , 0=Stop, 1=Forward , 2=Backward , 3=Right , 4=Left
+    unsigned volatile char Speed_A=0; // Speed control for motor A 0,1,2,3,4,5....,10  {0= Speed is 0%} {5= Speed is 50%} {10=Speed is 100%}
+    unsigned volatile char Speed_B=0; // Speed control for motor A 0,1,2,3,4,5....,10  {0= Speed is 0%} {5= Speed is 50%} {10=Speed is 100%}
+
+
+    while(1){
+
+        Steering(Steer,Speed_A,Speed_B);
+        __delay_cycles(5000000);
+        Steering(1,10,10);
+        __delay_cycles(5000000);
+        Steer=BACKWARD;
+        Speed_A=5;
+        Speed_B=5;
+        Steering(Steer,Speed_A,Speed_B);
+        __delay_cycles(5000000);
+        Steering(Steer,Speed_A,-5);
+        __delay_cycles(5000000);
+    }
+
+}
+
+void Steering(char Steer, char Speed_A, char Speed_B){
+
+    switch(Steer){
+    case STOP : { //Stop
+        P1OUT &= 0x00; // replace with appriaate pass through hex value ~BIT1 + ~BIT2 + ~BIT3 + ~BIT4;
+        break;
+    }
+    case FORWARD:{ //Forward
+        P1OUT &= 0x00;
+        P1OUT |= BIT1 +BIT4;
+        break;
+    }
+    case BACKWARD:{ //Backward
+        P1OUT &= 0x00;
+        P1OUT |= BIT2 +BIT3;
+        break;
+    }
+    case RIGHT:{ //Right
+        P1OUT &= 0x00;
+        P1OUT |= BIT2 +BIT4;
+        break;
+    }
+    case LEFT:{ //Left
+        P1OUT &= 0x00;
+        P1OUT |= BIT1 +BIT3;
+        break;
+    }
+    default : { //Stop
+        P1OUT &= 0x00;
+        break;
+    }
+    }
+
+    switch(Speed_A){
+    case STOP : { //0% Duty Cycle
+        TA1CCR1 = 0;
+        break;
+    }
+    case 1:{ //10% Duty Cycle
+        TA1CCR1 = 1000;
+        break;
+    }
+    case 2:{ //20% Duty Cycle
+        TA1CCR1 = 2000;
+        break;
+    }
+    case 3:{ //30% Duty Cycle
+        TA1CCR1 = 3000;
+        break;
+    }
+    case 4:{ //40% Duty Cycle
+        TA1CCR1 = 4000;
+        break;
+    }
+    case 5:{ //50% Duty Cycle
+        TA1CCR1 = 5000;
+        break;
+    }
+    case 6:{ //60% Duty Cycle
+        TA1CCR1 = 6000;
+        break;
+    }
+    case 7:{ //70% Duty Cycle
+        TA1CCR1 = 7000;
+        break;
+    }
+    case 8:{ //80% Duty Cycle
+        TA1CCR1 = 8000;
+        break;
+    }
+    case 9:{ //90% Duty Cycle
+        TA1CCR1 = 9000;
+        break;
+    }
+    case 10:{ //100% Duty Cycle
+        TA1CCR1 = 10000;
+        break;
+    }
+    default : { //0% Duty Cycle
+        TA1CCR1 = 0;
+        break;
+    }
+    }
+
+    switch(Speed_B){
+    case STOP : { //0% Duty Cycle
+        TA1CCR2 = 0;
+        break;
+    }
+    case 1:{ //10% Duty Cycle
+        TA1CCR2 = 1000;
+        break;
+    }
+    case 2:{ //20% Duty Cycle
+        TA1CCR2 = 2000;
+        break;
+    }
+    case 3:{ //30% Duty Cycle
+        TA1CCR2 = 3000;
+        break;
+    }
+    case 4:{ //40% Duty Cycle
+        TA1CCR2 = 4000;
+        break;
+    }
+    case 5:{ //50% Duty Cycle
+        TA1CCR2 = 5000;
+        break;
+    }
+    case 6:{ //60% Duty Cycle
+        TA1CCR2 = 6000;
+        break;
+    }
+    case 7:{ //70% Duty Cycle
+        TA1CCR2 = 7000;
+        break;
+    }
+    case 8:{ //80% Duty Cycle
+        TA1CCR2 = 8000;
+        break;
+    }
+    case 9:{ //90% Duty Cycle
+        TA1CCR2 = 9000;
+        break;
+    }
+    case 10:{ //100% Duty Cycle
+        TA1CCR2 = 10000;
+        break;
+    }
+    default : { //0% Duty Cycle
+        TA1CCR2 = 0;
+        break;
+    }
+    }
+}
+
+void Initialize(void){
+
+    WDTCTL = WDTPW + WDTHOLD;   //Disable the Watchdog timer
+    _BIS_SR(GIE);                // Enable all Interrupts
+    P1OUT &= 0x00;               // Clear Pin 1
+    P1DIR &= 0x00;
+    P2OUT &= 0x00;               // Clear Pin 2
+    P2DIR &= 0x00;
+
+    //_________________(PWM SETUP)______________________________
+    TA1CCR0   = 10000;                                   // Period
+    TA1CTL    = (TASSEL_2 | MC_1);                       // SMCLK, timer in up-mode
+
+    //_________________(PWM ENA P2.1)______________________________
+    P2DIR    |=  BIT1;            // Set P2.1 to output-direction
+    P2SEL    |=  BIT1;            // Set P2.1 as TA1 output.
+    TA1CCTL1  = OUTMOD_7;         // Reset/set Mode
+    TA1CCR1 = 0;                  // Percent Duty Cycle
+    //_________________(PWM ENB P2.4)______________________________
+    P2DIR |= BIT4;                //Set P2.4 to output-direction.
+    P2SEL |= BIT4;                //Set P2.4 as TA1 output.
+    TA1CCTL2  = OUTMOD_7;         // Reset/set Mode
+    TA1CCR2 = 0;                  // Percent Duty Cycle
+
+    //_________________(PWM SETUP)______________________________
+    TA1CCR0   = 10000;                                   // Period
+    TA1CTL    = (TASSEL_2 | MC_1);                       // SMCLK, timer in up-mode
+
+    //________________Initiliaze Steering Pins___________________________
+    P1DIR |= BIT1+BIT2+BIT3+BIT4; //IN1 Side B P1.1
+
+}
