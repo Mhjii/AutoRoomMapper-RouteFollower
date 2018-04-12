@@ -16,7 +16,7 @@ class Point:
     def distance(self,point):
         return
 
-class LIDARPoint(Point)
+class LIDARPoint(Point):
     """Points generated from Lidar Data"""
     def __init__(self,posx,posy,ang,dist):
         self.roverPos = Point(posx,posy)
