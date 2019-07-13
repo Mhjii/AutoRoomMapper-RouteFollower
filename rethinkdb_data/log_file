@@ -1,0 +1,54 @@
+2018-03-04T18:14:52.583092300 0.015364s notice: In recursion: removing file 'C:\\Users\\tusti\\PycharmProjects\\AutoRoomMapper-RouteFollower\\rethinkdb_data\\tmp'
+2018-03-04T18:14:52.584064200 0.016084s warn: Trying to delete non-existent file 'C:\\Users\\tusti\\PycharmProjects\\AutoRoomMapper-RouteFollower\\rethinkdb_data\\tmp'
+2018-03-04T18:14:52.585066500 0.017770s notice: Initializing directory C:\\Users\\tusti\\PycharmProjects\\AutoRoomMapper-RouteFollower\\rethinkdb_data
+2018-03-04T18:14:52.586069900 0.018681s info: Creating a default database for your convenience. (This is because you ran 'rethinkdb' without 'create', 'serve', or '--join', and the directory 'C:\\Users\\tusti\\PycharmProjects\\AutoRoomMapper-RouteFollower\\rethinkdb_data' did not already exist or is empty.)
+2018-03-04T18:14:52.587071800 0.019234s notice: Running rethinkdb 2.3.6-windows (MSC 190024215)...
+2018-03-04T18:14:52.587071801 0.019313s notice: Running on 6.2.9200 (Windows 8, Server 2012)
+2018-03-04T18:14:52.587071802 0.019368s notice: Loading data from directory C:\\Users\\tusti\\PycharmProjects\\AutoRoomMapper-RouteFollower\\rethinkdb_data
+2018-03-04T18:14:53.318184400 0.750224s info: Automatically using cache size of 3879 MB
+2018-03-04T18:14:53.319186600 0.752046s notice: Listening for intracluster connections on port 29015
+2018-03-04T18:14:53.321192400 0.753430s notice: Listening for client driver connections on port 28015
+2018-03-04T18:14:53.321630500 0.753618s notice: Listening for administrative HTTP connections on port 8080
+2018-03-04T18:14:53.321630501 0.753620s notice: Listening on cluster address: 127.0.0.1
+2018-03-04T18:14:53.321630502 0.753624s notice: Listening on driver address: 127.0.0.1
+2018-03-04T18:14:53.321630503 0.753625s notice: Listening on http address: 127.0.0.1
+2018-03-04T18:14:53.321630504 0.753627s notice: To fully expose RethinkDB on the network, bind to all addresses by running rethinkdb with the `--bind all` command line option.
+2018-03-04T18:14:53.321630505 0.753630s notice: Server ready, "MJ_LAPTOP_ss6" 38ce0090-9f39-4396-bfe1-bcfb4cdd63ce
+2018-03-04T18:15:22.991612800 30.423880s warn: Received invalid clustering header from (unknown), closing connection -- something might be connecting to the wrong port.
+2018-03-04T18:15:35.347367200 0.025984s notice: Running rethinkdb 2.3.6-windows (MSC 190024215)...
+2018-03-04T18:15:35.348403100 0.026224s notice: Running on 6.2.9200 (Windows 8, Server 2012)
+2018-03-04T18:15:35.348403101 0.026439s notice: Loading data from directory C:\\Users\\tusti\\PycharmProjects\\AutoRoomMapper-RouteFollower\\rethinkdb_data
+2018-03-04T18:15:35.432376200 0.110099s info: Automatically using cache size of 3886 MB
+2018-03-04T18:15:35.447417800 0.125198s notice: Listening for intracluster connections on port 29015
+2018-03-04T18:15:35.451426100 0.130051s notice: Listening for client driver connections on port 28015
+2018-03-04T18:15:35.452656700 0.130904s notice: Listening for administrative HTTP connections on port 8080
+2018-03-04T18:15:35.452656701 0.130913s notice: Listening on cluster address: 127.0.0.1
+2018-03-04T18:15:35.452656702 0.130919s notice: Listening on driver address: 127.0.0.1
+2018-03-04T18:15:35.452656703 0.130923s notice: Listening on http address: 127.0.0.1
+2018-03-04T18:15:35.452656704 0.130928s notice: To fully expose RethinkDB on the network, bind to all addresses by running rethinkdb with the `--bind all` command line option.
+2018-03-04T18:15:35.452656705 0.130934s notice: Server ready, "MJ_LAPTOP_ss6" 38ce0090-9f39-4396-bfe1-bcfb4cdd63ce
+2018-03-04T18:15:36.147360800 0.825024s warn: Received invalid clustering header from (unknown), closing connection -- something might be connecting to the wrong port.
+2018-03-04T18:16:55.971238300 0.012594s notice: Running rethinkdb 2.3.6-windows (MSC 190024215)...
+2018-03-04T18:16:55.971238301 0.012745s notice: Running on 6.2.9200 (Windows 8, Server 2012)
+2018-03-04T18:16:55.971238302 0.012905s notice: Loading data from directory C:\\Users\\tusti\\PycharmProjects\\AutoRoomMapper-RouteFollower\\rethinkdb_data
+2018-03-04T18:16:56.088943800 0.130181s info: Automatically using cache size of 3884 MB
+2018-03-04T18:16:56.106990200 0.148462s notice: Listening for intracluster connections on port 29015
+2018-03-04T18:16:56.123032100 0.164356s notice: Listening for client driver connections on port 28015
+2018-03-04T18:16:56.124034400 0.165416s notice: Listening for administrative HTTP connections on port 8080
+2018-03-04T18:16:56.124034401 0.165443s notice: Listening on cluster address: 127.0.0.1
+2018-03-04T18:16:56.124034402 0.165447s notice: Listening on driver address: 127.0.0.1
+2018-03-04T18:16:56.124034403 0.165457s notice: Listening on http address: 127.0.0.1
+2018-03-04T18:16:56.124034404 0.165461s notice: To fully expose RethinkDB on the network, bind to all addresses by running rethinkdb with the `--bind all` command line option.
+2018-03-04T18:16:56.124034405 0.165470s notice: Server ready, "MJ_LAPTOP_ss6" 38ce0090-9f39-4396-bfe1-bcfb4cdd63ce
+2018-03-04T18:18:20.106379100 0.016752s notice: Running rethinkdb 2.3.6-windows (MSC 190024215)...
+2018-03-04T18:18:20.106379101 0.016944s notice: Running on 6.2.9200 (Windows 8, Server 2012)
+2018-03-04T18:18:20.107391200 0.017082s notice: Loading data from directory C:\\Users\\tusti\\PycharmProjects\\AutoRoomMapper-RouteFollower\\rethinkdb_data
+2018-03-04T18:18:20.224261600 0.134563s info: Automatically using cache size of 3888 MB
+2018-03-04T18:18:20.226229000 0.136305s notice: Listening for intracluster connections on port 29015
+2018-03-04T18:18:20.227230900 0.137702s notice: Listening for client driver connections on port 28015
+2018-03-04T18:18:20.228300300 0.137909s notice: Listening for administrative HTTP connections on port 8080
+2018-03-04T18:18:20.228300301 0.137914s notice: Listening on cluster address: 127.0.0.1
+2018-03-04T18:18:20.228300302 0.137916s notice: Listening on driver address: 127.0.0.1
+2018-03-04T18:18:20.228300303 0.137919s notice: Listening on http address: 127.0.0.1
+2018-03-04T18:18:20.228300304 0.137920s notice: To fully expose RethinkDB on the network, bind to all addresses by running rethinkdb with the `--bind all` command line option.
+2018-03-04T18:18:20.228300305 0.137923s notice: Server ready, "MJ_LAPTOP_ss6" 38ce0090-9f39-4396-bfe1-bcfb4cdd63ce

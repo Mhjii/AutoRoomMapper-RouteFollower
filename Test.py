@@ -1,18 +1,16 @@
-import SLAM
-import matplotlib.pyplot as plt
 import numpy as np
+import RethinkHelper as db
+import matplotlib.pyplot as plt
+import SLAM
 
-Map = np.zeros([4,4])
+R,Theta = db.getPoints()
+print(R)
+print(Theta)
 
-path = SLAM.astarpathfind(Map,[1,8],[8,1])
-print(path)
+ax = plt.subplot(111, projection='polar')
+ax.scatter(Theta, R)
+ax.set_rmax(5)
+ax.grid(True)
 
-for index, node in np.ndenumerate(Map):
-    if index == [0,0]:
-        continue
-    print(list(index))
-    path = SLAM.astarpathfind(Map,[0,0],list(index))
-    print(path)
-
-TestMap = SLAM.blockedPath(Map,list([0,0]))
-print(TestMap)
+ax.set_title("Points from lidar grabbed off database", va='bottom')
+plt.show()
